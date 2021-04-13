@@ -91,5 +91,6 @@ def update_animal(id, new_animal):
     for index, animal in enumerate(ANIMALS):
         if animal["id"] == id:
             # Found the animal. Update the value.
+            # animals at the index we are looping through is equal to the new_animal
             ANIMALS[index] = new_animal
             break
