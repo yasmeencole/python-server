@@ -1,15 +1,30 @@
+import sqlite3
+import json
+from models import Location
+# The sqlite3 package is built into Python and will allow you to query your database. 
+# The json package is also built into Python and allows you to serialize Python data structures 
+# to JSON format, and vice versa.
+# Import Location class so that you can create instances of it for each row of data that gets returned
+#  from the database.
+
+# To query the database for all locations, convert each row into an Location instance, convert 
+# the list to JSON, and respond to the client request.
+
 LOCATIONS = [
     {
         "id": 1,
         "name": "Nashville East",
+        "address": "35498 Madison Ave"
     },
     {
         "id": 2,
         "name": "Nashville South",
+        "address": "101 Penn Ave"
     },
     {
         "id": 3,
         "name": "Nashville North",
+        "address": "64 Washington Heights"
     }
 ]
 
@@ -80,3 +95,66 @@ def update_location(id, new_location):
             # Found the location. Update the value.
             LOCATIONS[index] = new_location
             break        
+
+def get_all_locations():
+    # Open a connection to the database
+    with sqlite3.connect("./kennel.db") as conn:
+
+        # Just use these. It's a Black Box.
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        SELECT
+            l.id,
+            l.name,
+            l.address
+
+        FROM location l
+        """)
+
+        # Initialize an empty list to hold all location representations
+        locations = []
+
+        # Convert rows of data into a Python list
+        dataset = db_cursor.fetchall()
+
+        # Iterate list of data returned from database
+        for row in dataset:
+
+            # Create an location instance from the current row.
+            # Note that the database fields are specified in
+            # exact order of the parameters defined in the
+            # Location class above.
+            location = Location(row['id'], row['name'], row['address'])
+
+            locations.append(location.__dict__)
+
+    # Use `json` package to properly serialize list as JSON
+    return json.dumps(locations)        
+
+def get_single_location(id):
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Use a ? parameter to inject a variable's value
+        # into the SQL statement.
+        db_cursor.execute("""
+        SELECT
+            l.id,
+            l.name,
+            l.address,
+
+        FROM location l
+        WHERE l.id = ?
+        """, ( id, ))
+
+        # Load the single result into memory
+        data = db_cursor.fetchone()
+
+        # Create an location instance from the current row
+        location = Location(data['id'], data['name'], data['address'])
+
+        return json.dumps(location.__dict__)            

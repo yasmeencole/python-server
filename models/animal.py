@@ -17,4 +17,4 @@ class Animal():
 
 new_animal = Animal(1, "Harry", "Pitbull", "Admitted", 1, 4)
 
-print(new_animal)
+# print(new_animal)

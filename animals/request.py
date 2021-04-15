@@ -1,27 +1,39 @@
+import sqlite3
+import json
+from models import Animal
+# The sqlite3 package is built into Python and will allow you to query your database. 
+# The json package is also built into Python and allows you to serialize Python data structures 
+# to JSON format, and vice versa.
+# Import Animal class so that you can create instances of it for each row of data that gets returned
+#  from the database.
+
+# To query the database for all animals, convert each row into an Animal instance, convert 
+# the list to JSON, and respond to the client request.
+
 ANIMALS = [
     {
         "id": 1,
         "name": "Harry",
-        "species": "Pitbull",
+        "breed": "Pitbull",
         "status": "Admitted",
-        "locationId": 1,
-        "customerId": 4
+        "location_id": 1,
+        "customer_id": 4
     },
     {
         "id": 2,
-        "name": "Gypsy",
-        "species": "Dog",
+        "name": "Jax",
+        "breed": "Beagle",
         "status": "Admitted",
-        "locationId": 1,
-        "customerId": 2
+        "location_id": 1,
+        "customer_id": 2
     },
     {
         "id": 3,
         "name": "Blue",
-        "species": "Cat",
+        "breed": "Cat",
         "status": "Admitted",
-        "locationId": 2,
-        "customerId": 1
+        "location_id": 2,
+        "customer_id": 1
     }
 ]
 
@@ -94,3 +106,74 @@ def update_animal(id, new_animal):
             # animals at the index we are looping through is equal to the new_animal
             ANIMALS[index] = new_animal
             break
+
+def get_all_animals():
+    # Open a connection to the database
+    with sqlite3.connect("./kennel.db") as conn:
+
+        # Just use these. It's a Black Box.
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.breed,
+            a.status,
+            a.location_id,
+            a.customer_id
+        FROM animal a
+        """)
+
+        # Initialize an empty list to hold all animal representations
+        animals = []
+
+        # Convert rows of data into a Python list
+        dataset = db_cursor.fetchall()
+
+        # Iterate list of data returned from database
+        for row in dataset:
+
+            # Create an animal instance from the current row.
+            # Note that the database fields are specified in
+            # exact order of the parameters defined in the
+            # Animal class above.
+            animal = Animal(row['id'], row['name'], row['breed'],
+                            row['status'], row['location_id'],
+                            row['customer_id'])
+
+            animals.append(animal.__dict__)
+
+    # Use `json` package to properly serialize list as JSON
+    return json.dumps(animals)        
+
+def get_single_animal(id):
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Use a ? parameter to inject a variable's value
+        # into the SQL statement.
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.breed,
+            a.status,
+            a.location_id,
+            a.customer_id
+        FROM animal a
+        WHERE a.id = ?
+        """, ( id, ))
+
+        # Load the single result into memory
+        data = db_cursor.fetchone()
+
+        # Create an animal instance from the current row
+        animal = Animal(data['id'], data['name'], data['breed'],
+                            data['status'], data['location_id'],
+                            data['customer_id'])
+
+        return json.dumps(animal.__dict__)    
