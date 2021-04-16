@@ -9,4 +9,4 @@ class Employee():
         self.address = address
         self.location_id = location_id
 
-new_employee = Employee(1, "Kasey", "35498 Madison Ave", 1)
+# new_employee = Employee(1, "Kasey", "35498 Madison Ave", 1)

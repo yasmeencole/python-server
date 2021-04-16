@@ -37,6 +37,8 @@ CREATE TABLE `Location` (
 INSERT INTO `Animal` VALUES (null, "Harry", "Pitbull", "Admitted", 1, 4);
 INSERT INTO `Animal` VALUES (null, "Jax", "Beagle", "Admitted", 1, 2);
 INSERT INTO `Animal` VALUES (null, "Blue", "Siamese", "Admitted", 2, 1);
+INSERT INTO `Animal` VALUES (null, "Daps", "Kennel", "Boxer", 2, 2);
+
 
 INSERT INTO `Customer` VALUES (null, "Mary", "201 Created St", "mary@gmail.com", "password");
 INSERT INTO `Customer` VALUES (null, "Eve", "500 Internal Error Blvd", "eve@gmail.com", "password");
@@ -61,26 +63,26 @@ FROM animal a
 WHERE a.id = 3
 
 SELECT
-            c.id,
-            c.name,
-            c.address,
-            c.email,
-            c.password
-        FROM customer c
+    c.id,
+    c.name,
+    c.address,
+    c.email,
+    c.password
+FROM customer c
 WHERE c.id = 3
 
 SELECT
-            e.id,
-            e.name,
-            e.address,
-            e.email,
-            e.password
-        FROM employee e
+    e.id,
+    e.name,
+    e.address,
+    e.email,
+    e.password
+FROM employee e
 WHERE e.id = 3
 
 SELECT
-            l.id,
-            l.name,
-            l.address
-        FROM location l
+    l.id,
+    l.name,
+    l.address
+FROM location l
 WHERE l.id = 3

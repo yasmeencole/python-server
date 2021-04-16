@@ -2,7 +2,7 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from animals import get_all_animals, get_single_animal, create_animal, delete_animal, update_animal
-from customers import get_all_customers, get_single_customer, create_customer, delete_customer, update_customer
+from customers import get_all_customers, get_single_customer, create_customer, delete_customer, update_customer, get_customers_by_email
 from employees import get_all_employees, get_single_employee, create_employee, delete_employee, update_employee
 from locations import get_all_locations, get_single_location, create_location, delete_location, update_location
 
@@ -23,20 +23,33 @@ class HandleRequests(BaseHTTPRequestHandler):
         # path is the route?
         path_params = path.split("/")
         resource = path_params[1]
-        id = None
 
-        # Try to get interger from path parameters at index 2 [2]
-        try:
-            # Convert the string "2" to the integer 2
-            # This is the new parseInt() == int()
-            id = int(path_params[2])
-        except IndexError:
-            pass  # No route parameter exists: /animals
-        except ValueError:
-            pass  # Request had trailing slash: /animals/
+        # Check if there is a query string parameter
+        if "?" in resource:
+        # GIVEN: /customers?email=jenna@solis.com
+            param = resource.split("?")[1]  # email=jenna@solis.com
+            resource = resource.split("?")[0]  # 'customers'
+            pair = param.split("=")  # [ 'email', 'jenna@solis.com' ]
+            key = pair[0]  # 'email'
+            value = pair[1]  # 'jenna@solis.com'
+
+            return ( resource, key, value )
+        # No query string parameter
+        else:
+            id = None
+
+            # Try to get interger from path parameters at index 2 [2]
+            try:
+                # Convert the string "2" to the integer 2
+                # This is the new parseInt() == int()
+                id = int(path_params[2])
+            except IndexError:
+                pass  # No route parameter exists: /animals
+            except ValueError:
+                pass  # Request had trailing slash: /animals/
 
 # it is a tuple if the return has a comma in it (resource, id)
-        return (resource, id)  # This is a tuple 
+            return (resource, id)  # This is a tuple 
 
     # Here's a class function
     # status is what we passed in the 200 or the 201
@@ -63,22 +76,29 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         # Parse the URL and capture the tuple that is returned
         # this (resource, id), the stuff on the left hand side, is unpacking a tuple
-        (resource, id) = self.parse_url(self.path)
+        # Parse URL and store entire tuple in a variable
+        parsed = self.parse_url(self.path)
 
         # if self.path == "/animals":
         #     response = get_all_animals()
         # else:
-        #     response = []      
-        if resource == "animals":
-            # if this is true then get a signle animal
-            if id is not None:
-            # In Python, this is a list of dictionaries
-            # In JavaScript, you would call it an array of objects
-            # gets a signle animal
-                response = f"{get_single_animal(id)}"
-            # else, this is false, then it gets back all of the animals
-            else:
-                response = f"{get_all_animals()}"
+        #     response = []  
+        
+        # Response from parse_url() is a tuple with 2
+        # items in it, which means the request was for
+        # `/animals` or `/animals/2`
+        if len(parsed) == 2:
+            ( resource, id ) = parsed
+            if resource == "animals":
+                # if this is true then get a signle animal
+                if id is not None:
+                # In Python, this is a list of dictionaries
+                # In JavaScript, you would call it an array of objects
+                # gets a signle animal
+                    response = f"{get_single_animal(id)}"
+                # else, this is false, then it gets back all of the animals
+                else:
+                    response = f"{get_all_animals()}"   
 
         if resource == "employees":
             # if this is true then get a signle employee
@@ -100,7 +120,7 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = f"{get_single_location(id)}"
             # else, this is false, then it gets back all of the locations
             else:
-                response = f"{get_all_locations()}"   
+                response = f"{get_all_locations()}"
 
         if resource == "customers":
             # if this is true then get a signle customer
@@ -111,8 +131,18 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = f"{get_single_customer(id)}"
             # else, this is false, then it gets back all of the customers
             else:
-                response = f"{get_all_customers()}"                 
+                response = f"{get_all_customers()}"
+        # Response from parse_url() is a tuple with 3
+        # items in it, which means the request was for
+        # `/resource?parameter=value`
+        elif len(parsed) == 3:
+            ( resource, key, value ) = parsed
 
+            # Is the resource `customers` and was there a
+            # query parameter that specified the customer
+            # email as a filtering value?
+            if key == "email" and resource == "customers":
+                response = f"{get_customers_by_email(value)}" 
         # wfile contains the output stream for writing a response back to the client. Proper adherence to the HTTP protocol
         # must be used when writing to this stream in order to achieve successful interoperation with HTTP clients.
         # sends a response back to the client
@@ -160,7 +190,7 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any PUT request.
     # PUT request is used to update resource
     def do_PUT(self):
-        self._set_headers(204)
+        self._set_headers(201)
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
         # turns into post body when json loads
