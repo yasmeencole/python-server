@@ -82,10 +82,12 @@ SELECT
     e.id,
     e.name,
     e.address,
-    e.email,
-    e.password
-FROM employee e
-WHERE e.id = 3
+    e.location_id,
+    l.name location_name,
+    l.address location_address
+FROM Employee e
+JOIN Location l
+    ON l.id = e.location_id
 
 SELECT
     l.id,
