@@ -1,7 +1,7 @@
 # this a blueprint to set up how a Animal should look
 # allow us to determine how the data should be set up 
 # helps us not corrupt our database with incorrect data 
-
+# sets up properties on a class
 class Animal():
 
     # Class initializer. It has 5 custom parameters, with the
@@ -14,7 +14,9 @@ class Animal():
         self.status = status
         self.location_id = location_id
         self.customer_id = customer_id
+        self.location = None
+        self.customer = None
 
-new_animal = Animal(1, "Harry", "Pitbull", "Admitted", 1, 4)
+# new_animal = Animal(1, "Harry", "Pitbull", "Admitted", 1, 4)
 
 # print(new_animal)

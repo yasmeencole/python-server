@@ -8,4 +8,4 @@ class Location():
         self.name = name
         self.address = address
 
-new_location = Location(1, "Nashville East", "35498 Madison Ave")
+# new_location = Location(1, "Nashville East", "35498 Madison Ave")

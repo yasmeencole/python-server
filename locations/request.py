@@ -35,26 +35,26 @@ LOCATIONS = [
 # as the id that was passed into the function as a parameter.
 # Finally, it returns the value of requested_location
 
-def get_all_locations():
-    return LOCATIONS
+# def get_all_locations():
+#     return LOCATIONS
 
-# Function with a single parameter
-def get_single_location(id):
-# Variable to hold the found location, if it exists
-    requested_location = None
+# # Function with a single parameter
+# def get_single_location(id):
+# # Variable to hold the found location, if it exists
+#     requested_location = None
 
-# Iterate the LOCATIONS list above. Very similar to the
-# for..of loops you used in JavaScript.
-# this is a for in loop
-    for location in LOCATIONS:
-    # Dictionaries in Python use [] notation to find a key
-    # instead of the dot notation that JavaScript used.
-    # this is a if statement
-        if location["id"] == id:
-            # sets location to a new variable
-            requested_location = location
+# # Iterate the LOCATIONS list above. Very similar to the
+# # for..of loops you used in JavaScript.
+# # this is a for in loop
+#     for location in LOCATIONS:
+#     # Dictionaries in Python use [] notation to find a key
+#     # instead of the dot notation that JavaScript used.
+#     # this is a if statement
+#         if location["id"] == id:
+#             # sets location to a new variable
+#             requested_location = location
 
-    return requested_location
+#     return requested_location
 
 def create_location(location):
     # Get the id value of the last location in the list
@@ -143,10 +143,9 @@ def get_single_location(id):
         # into the SQL statement.
         db_cursor.execute("""
         SELECT
-            l.id,
-            l.name,
-            l.address,
-
+        l.id,
+        l.name,
+        l.address
         FROM location l
         WHERE l.id = ?
         """, ( id, ))
